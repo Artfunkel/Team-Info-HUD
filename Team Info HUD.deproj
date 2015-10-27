@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+  <file>
+    <filename>output\lua\GUITeamInfoHUD.lua</filename>
+  </file>
+  <file>
+    <filename>output\lua\entry\TeamInfoHUD.entry</filename>
+  </file>
+  <file>
+    <filename>output\lua\TeamInfoHUD_Client.lua</filename>
+  </file>
+  <file>
+    <filename>output\lua\TeamInfoHUD_Server.lua</filename>
+  </file>
+  <file>
+    <filename>output\lua\TeamInfoHUD_Shared.lua</filename>
+  </file>
+</project>

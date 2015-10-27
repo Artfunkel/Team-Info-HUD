@@ -1,0 +1,6 @@
+modEntry = [[
+Client: lua/TeamInfoHUD_Client.lua,
+Server: lua/TeamInfoHUD_Server.lua,
+Shared: lua/TeamInfoHUD_Shared.lua,
+Priority: 5
+]]
