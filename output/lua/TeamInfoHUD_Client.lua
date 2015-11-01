@@ -16,17 +16,23 @@ AddClientUIScriptForClass("MarineCommander","GUITeamInfoHUD")
 AddClientUIScriptForClass("Alien","GUITeamInfoHUD")
 AddClientUIScriptForClass("AlienCommander","GUITeamInfoHUD")
 
-local base_MinimapUpdate
-local function HighlightSelectedPlayers(self,deltaTime)
-	base_MinimapUpdate(self,deltaTime)
-	
-	local localTeam = Client.GetLocalPlayer():GetTeamNumber()
-	for i, blipEnt in ientitylist(Shared.GetEntitiesWithClassname("MapBlip")) do
-		local owner = Shared.GetEntity(blipEnt.ownerEntityId)
-		if owner and (not owner.GetIsInCombat or not owner:GetIsInCombat()) and owner.GetIsSelected and owner:GetIsSelected(localTeam) then
-			self.staticBlips[i]:SetColor(green)
-		end
+local function HighlightSelectedBlip(blip, minimap, ownerEntityID)
+	local owner = Shared.GetEntity(ownerEntityID)
+	if not blip.isInCombat and owner and HasMixin(owner, "Selectable") and owner:GetIsSelected(minimap.playerTeam) then
+		blip.currentMapBlipColor = green
 	end
+end
+
+local base_MapBlipUpdateMinimapItemHook = MapBlip.UpdateMinimapItemHook
+function MapBlip:UpdateMinimapItemHook(minimap, item)
+	base_MapBlipUpdateMinimapItemHook(self, minimap, item)
+	HighlightSelectedBlip(self, minimap, self:GetOwnerEntityId())
+end
+
+local base_PlayerMapBlipUpdateMinimapItemHook = PlayerMapBlip.UpdateMinimapItemHook
+function PlayerMapBlip:UpdateMinimapItemHook(minimap, item)
+	base_PlayerMapBlipUpdateMinimapItemHook(self, minimap, item)
+	HighlightSelectedBlip(self, minimap, Scoreboard_GetPlayerRecord(self.clientIndex).EntityId)
 end
 
 local base_CommanderOnInitLocalClient = Commander.OnInitLocalClient
@@ -35,8 +41,6 @@ function Commander:OnInitLocalClient()
 	self.managerScript:AddChildScript(GetHud()) -- no proper way of doing this :(
 	
 	local minimapScript = ClientUI.GetScript("GUIMinimapFrame")
-	base_MinimapUpdate = GUIMinimapFrame.Update
-	minimapScript.Update = HighlightSelectedPlayers
 	minimapScript.spawnQueueText:SetIsVisible(false)
 	
 	GetGUIManager():DestroyGUIScriptSingle("GUIHotkeyIcons") -- we are replacing this
